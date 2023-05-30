@@ -13,6 +13,7 @@
 
 from bs4 import BeautifulSoup
 import requests
+import re
 import csv
 
 def write_csv(data):
@@ -28,9 +29,9 @@ def news(html):
     list_ = soup.find_all('div', class_= 'list-item list-label')
     for car in list_:
         title = car.find('h2', class_='name').text.replace('\n', '').strip()
-        price = car.find('p').text.replace('\n', '').replace('  ','')
+        price = car.find('strong').text.replace('\n', '').replace('  ','')
         image = car.find('img', class_='lazy-image').get('data-src') if car.find('img', class_='lazy-image') != None else 'No image'
-        description = car.find('div', class_ = 'block info-wrapper item-info-wrapper').text.replace('\n', '').replace(',', '').replace(' ', '')
+        description = re.sub(r'\s+', ' ', car.find('div', class_='block info-wrapper item-info-wrapper').text).strip()
         dict_ = {'title':title, 'price':price, 'description':description, 'image':image}
         write_csv(dict_)
 
